@@ -3,8 +3,9 @@ import tkinter.messagebox
 import mysql.connector
 from Store.data import Data
 from PIL import Image, ImageTk
-from  EditEmp import EmpEdit
-
+from Components.EditEmp import EmpEdit
+from Components.Departments import Departments
+from Components.Payroll import Payroll
 class EmployeeManagement:
     def __init__(self):
         self.Data = Data()
@@ -34,9 +35,6 @@ class EmployeeManagement:
         self.PayRollpage = Frame(self.root, bg = "lightblue")
         self.activePage = None
         self.WelcomeScreen()
-        self.EmpEditScreen()
-        self.DepartmentsScreen()
-        self.PayRollScreen()
         self.root.mainloop()
 
     def AddEmp(self):
@@ -49,6 +47,12 @@ class EmployeeManagement:
         if "@" in mail and name != "" and dob != "" and mail != "" and phone != "" and role != "" and dept != "":
             self.cursor.execute("insert into employees(Name, DOB, Email, Phone, Role, Dept) values(%s, %s, %s, %s, %s, %s)", [name, dob, mail, phone, role, dept])
             self.db.commit()
+            self.Name.set('')
+            self.Dob.set('')
+            self.Email.set('')
+            self.Phone.set('')
+            self.Role.set('')
+            self.Dept.set('')
             tkinter.messagebox.showinfo("emp added", "Employee Added Successfully")
         else:
             tkinter.messagebox.showerror("emp addition err", "Please Enter Valid Details")
@@ -77,19 +81,21 @@ class EmployeeManagement:
         self.HomePage.pack_forget()
         self.EditPage.pack(fill = BOTH, expand = True)
         self.activePage = self.EditPage
-        #EmpEdit(self.root).EmpEditScreen()
+        self.EmpEditScreen()
 
     def GoDeptPage(self):
         global activePage
         self.HomePage.pack_forget()
         self.DeptPage.pack(fill = BOTH, expand = True)
         self.activePage = self.DeptPage
+        self.DepartmentsScreen()
 
     def GoPayRollPage(self):
         global activePage
         self.HomePage.pack_forget()
         self.PayRollpage.pack(fill = BOTH, expand = True)
         self.activePage = self.PayRollpage
+        self.PayRollScreen()
 
     def GoViewEmpPage(self):
         viewEmp = Toplevel(self.root)
@@ -119,17 +125,22 @@ class EmployeeManagement:
 
     def EmpView(self):
         id = self.ID.get()
-        self.cursor.execute("select * from employees where Id = %s", [id])
+        name = self.Name.get()
+        self.cursor.execute("select * from employees where Id = %s OR Name = %s", [id, name])
         data = self.cursor.fetchall()
-        if len(data)  > 0:
-            self.Name.set(data[0][1])
-            self.Dob.set(data[0][2])
-            self.Email.set(data[0][3])
-            self.Phone.set(data[0][4])
-            self.Role.set(data[0][5])
-            self.Dept.set(data[0][6])
+        if id != '' or name != '':
+            if len(data)  > 0:
+                self.ID.set(data[0][0])
+                self.Name.set(data[0][1])
+                self.Dob.set(data[0][2])
+                self.Email.set(data[0][3])
+                self.Phone.set(data[0][4])
+                self.Role.set(data[0][5])
+                self.Dept.set(data[0][6])
+            else:
+                tkinter.messagebox.showerror("no data", "There is no user with this ID")
         else:
-            tkinter.messagebox.showerror("no data", "There is no user with this ID")
+            tkinter.messagebox.showerror("no data", "Please enter Id or Name to see the details")
 
     def SavePayRoll(self):
         id = self.ID.get()
@@ -189,60 +200,22 @@ class EmployeeManagement:
         Button(self.HomePage, text = "View Employees", bg = "blue", fg = "white", font = ("calibri", 15), height = 1, width = 20, command = self.GoViewEmpPage).place(x = 270, y = 350)
 
     def EmpEditScreen(self):
-        Label(self.EditPage, text = "ID", bg = "lightblue", fg = "blue", font = ("calibri", 15)).place(x = 70, y = 100)
-        Label(self.EditPage, text = "Name", bg = "lightblue", fg = "blue", font = ("calibri", 15)).place(x = 70, y = 150)
-        Label(self.EditPage, text = "Department", bg = "lightblue", fg = "blue", font = ("calibri", 15)).place(x = 70, y = 200)
-        Label(self.EditPage, text = "DOB", bg = "lightblue", fg = "blue", font = ("calibri", 15)).place(x = 70, y = 250)
-        Label(self.EditPage, text = "Email", bg = "lightblue", fg = "blue", font = ("calibri", 15)).place(x = 70, y = 300)
-        Label(self.EditPage, text = "Phone", bg = "lightblue", fg = "blue", font = ("calibri", 15)).place(x = 70, y = 350)
-        Label(self.EditPage, text = "Role", bg = "lightblue", fg = "blue", font = ("calibri", 15)).place(x = 70, y = 400)
-
-        Entry(self.EditPage, textvariable = self.ID , bg = "lightblue", fg = "blue", font = ("calibri", 15)).place(x = 190, y = 100)
-        Entry(self.EditPage, textvariable = self.Name , bg = "lightblue", fg = "blue", font = ("calibri", 15)).place(x = 190, y = 150)
-        Entry(self.EditPage, textvariable = self.Dept , bg = "lightblue", fg = "blue", font = ("calibri", 15)).place(x = 190, y = 200)
-        Entry(self.EditPage, textvariable = self.Dob, bg = "lightblue", fg = "blue", font = ("calibri", 15)).place(x = 190, y = 250)
-        Entry(self.EditPage, textvariable = self.Email, bg = "lightblue", fg = "blue", font = ("calibri", 15)).place(x = 190, y = 300)
-        Entry(self.EditPage, textvariable = self.Phone, bg = "lightblue", fg = "blue", font = ("calibri", 15)).place(x = 190, y = 350)
-        Entry(self.EditPage, textvariable = self.Role, bg = "lightblue", fg = "blue", font = ("calibri", 15)).place(x = 190, y = 400)
-
-        Button(self.EditPage, text = "Add", bg = "blue", fg = "white", font = ("calibri", 15), command = self.AddEmp).place(x = 190, y = 450)
-        Button(self.EditPage, text = "Update", bg = "blue", fg = "white", font = ("calibri", 15), command = self.UpdateEmp).place(x = 290, y = 450)
-        Button(self.EditPage, text = "Delete", bg = "blue", fg = "white", font = ("calibri", 15), command = self.EmpDelete).place(x = 390, y = 450)
-        Button(self.EditPage, text = "View", bg = "blue", fg = "white", font = ("calibri", 15), command = self.EmpView).place(x = 490, y = 450)
-
-        Button(self.EditPage, text = "Back", bg = "blue", fg = "white", font = ("calibri", 15), command = self.Back).place(x = 10, y = 10)
+        emp_edit = EmpEdit(self.EditPage, self.Back)
+        emp_edit.db = self.db
+        emp_edit.cursor = self.cursor
+        emp_edit.Data = self.Data
+        emp_edit.EmpEditScreen()
 
     def DepartmentsScreen(self):
-        i = 1
-        j = 50
-        for dept in self.Data.Dept():
-            Button(self.DeptPage, text = dept, bg = "blue", fg = "white", height = 2, width = 12, font = ("calibri", 10), command = lambda dept = dept : self.ViewEmpByDept(dept)).place(x = i * 100, y = j)
-            i += 1
-            if i >= 6:
-                j *= 2
-                i = 1
-        Button(self.DeptPage, text = "Back", bg = "blue", fg = "white", font = ("calibri", 15), command = self.Back).place(x = 10, y = 10)
+        dept = Departments(self.DeptPage, self.Back)
+        dept.db = self.db
+        dept.cursor = self.cursor
+        dept.Data = self.Data
+        dept.DepartmentsScreen()
 
     def PayRollScreen(self):
-        Label(self.PayRollpage, text = "Add or Edit Employee Salary Details", bg = "lightblue", fg = "blue", font = ("calibri", 25)).place(x = 60, y = 30)
-
-        Label(self.PayRollpage, text = "ID", fg = "blue", bg = "lightblue", font = ("calibri", 15)).place(x = 70, y = 100)
-        Label(self.PayRollpage, text = "Salary", fg = "blue", bg = "lightblue", font = ("calibri", 15)).place(x = 70, y = 150)
-        Label(self.PayRollpage, text = "Bonus", fg = "blue", bg = "lightblue", font = ("calibri", 15)).place(x = 70, y = 200)
-        Label(self.PayRollpage, text = "Decuction", fg = "blue", bg = "lightblue", font = ("calibri", 15)).place(x = 70, y = 250)
-        Label(self.PayRollpage, text = "Pay_Date", fg = "blue", bg = "lightblue", font = ("calibri", 15)).place(x = 70, y = 300)
-
-        Entry(self.PayRollpage, textvariable = self.ID, fg = "blue", bg = "lightblue", font = ("calibri", 15)).place(x = 190, y = 100)
-        Entry(self.PayRollpage, textvariable = self.Salary, fg = "blue", bg = "lightblue", font = ("calibri", 15)).place(x = 190, y = 150)
-        Entry(self.PayRollpage, textvariable = self.Bonus, fg = "blue", bg = "lightblue", font = ("calibri", 15)).place(x = 190, y = 200)
-        Entry(self.PayRollpage, textvariable = self.Decuction, fg = "blue", bg = "lightblue", font = ("calibri", 15)).place(x = 190, y = 250)
-        Entry(self.PayRollpage, textvariable = self.Pay_Date, fg = "blue", bg = "lightblue", font = ("calibri", 15)).place(x = 190, y = 300)
-        
-        Button(self.PayRollpage, text = "Save", bg = "blue", fg = "white", font = ("calibri", 15), command = self.SavePayRoll).place(x = 250, y = 400)
-        Button(self.PayRollpage, text = "View Salary Details", bg = "blue", fg = "white", font = ("calibri", 15), command = self.ViewPayRoll).place(x = 350, y = 400)
-
-
-        Button(self.PayRollpage, text = "Back", bg = "blue", fg = "white", font = ("calibri", 15), command = self.Back).place(x = 10, y = 10)
-
+        payroll = Payroll(self.PayRollpage, self.Back)
+        payroll.PayRollScreen()
+    
 if __name__ == "__main__":
     E = EmployeeManagement()

@@ -2,12 +2,7 @@ from tkinter import *
 import tkinter.messagebox
 from Store.data import Data
 class EmpEdit:
-    def __init__(self, root):
-        # self.Data = Data()
-        # self.root = Tk()
-        # self.root.geometry("700x600")
-        # self.root.title("Employee Management System")
-        # self.root.configure(bg = "lightblue")
+    def __init__(self, root, back):
         self.ID = IntVar()
         self.Name = StringVar()
         self.Dept = StringVar()
@@ -15,10 +10,10 @@ class EmpEdit:
         self.Role = StringVar()
         self.Email  = StringVar()
         self.Phone = IntVar()
+        self.Back = back
         self.EditPage = Frame(root, bg = "lightblue")
         self.EditPage.pack(fill = BOTH, expand = True)
-        #self.EmpEditScreen()
-        # self.root.mainloop()
+        #self.activePage = root  #back button work in progress
 
     def AddEmp(self):
         name = self.Name.get()
@@ -72,11 +67,6 @@ class EmpEdit:
         else:
             tkinter.messagebox.showerror("no data", "There is no user with this ID")
 
-    def Back(self):
-        self.activePage.pack_forget()
-        self.HomePage.pack(fill = BOTH, expand = True)
-
-
     def EmpEditScreen(self):
         Label(self.EditPage, text = "ID", bg = "lightblue", fg = "blue", font = ("calibri", 15)).place(x = 70, y = 100)
         Label(self.EditPage, text = "Name", bg = "lightblue", fg = "blue", font = ("calibri", 15)).place(x = 70, y = 150)
@@ -100,7 +90,6 @@ class EmpEdit:
         Button(self.EditPage, text = "View", bg = "blue", fg = "white", font = ("calibri", 15), command = self.EmpView).place(x = 490, y = 450)
 
         Button(self.EditPage, text = "Back", bg = "blue", fg = "white", font = ("calibri", 15), command = self.Back).place(x = 10, y = 10)
-
 
 if __name__ == "__main__":
     EmpEdit()

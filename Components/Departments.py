@@ -1,29 +1,22 @@
 from tkinter import *
 import tkinter.messagebox
 from Store.data import Data
-from EditEmp import EmpEdit
 class Departments:
-    def __init__(self):
+    def __init__(self, root, back):
         self.Data = Data()
-        self.root = Tk()
-        self.root.geometry("700x600")
-        self.root.title("Employee Management System")
-        self.root.configure(bg = "lightblue")
-        self.DeptPage = Frame(self.root, bg = "lightblue")
+        self.DeptPage = Frame(root, bg = "lightblue")
         self.DeptPage.pack(fill = BOTH, expand = True)
+        self.Back = back
         self.DepartmentsScreen()
-        EmpEdit(self.root)
-        self.root.mainloop()
-
     def GoDeptPage(self):
         global activePage
         self.HomePage.pack_forget()
         self.DeptPage.pack(fill = BOTH, expand = True)
         self.activePage = self.DeptPage
 
-    def Back(self):
-        self.activePage.pack_forget()
-        self.HomePage.pack(fill = BOTH, expand = True)
+    # def Back(self):
+    #     self.activePage.pack_forget()
+    #     self.HomePage.pack(fill = BOTH, expand = True)
 
     def DepartmentsScreen(self):
         i = 1
