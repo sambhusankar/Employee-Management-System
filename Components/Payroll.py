@@ -1,6 +1,11 @@
 from tkinter import *
 import tkinter.messagebox
+import sys
+import os
+# Add the parent directory of folder_one and folder_two to sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from Store.data import Data
+
 class Payroll:
     def __init__(self, root, back):
         self.Data = Data

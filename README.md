@@ -21,3 +21,4 @@ The application's graphical design incorporates a stylized gear motif, symbolizi
 
 # Add-Salary-Detail-Page
 
+

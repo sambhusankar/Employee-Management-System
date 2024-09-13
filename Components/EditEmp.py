@@ -1,8 +1,14 @@
 from tkinter import *
 import tkinter.messagebox
+import sys
+import os
+# Add the parent directory of folder_one and folder_two to sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from Store.data import Data
-class EmpEdit:
-    def __init__(self, root, back):
+
+class EmpEdit: 
+    def __init__(self, root, back): 
+        self.Data = Data()
         self.ID = IntVar()
         self.Name = StringVar()
         self.Dept = StringVar()
@@ -13,7 +19,7 @@ class EmpEdit:
         self.Back = back
         self.EditPage = Frame(root, bg = "lightblue")
         self.EditPage.pack(fill = BOTH, expand = True)
-        #self.activePage = root  #back button work in progress
+        
 
     def AddEmp(self):
         name = self.Name.get()
@@ -22,12 +28,7 @@ class EmpEdit:
         phone = self.Phone.get()
         role = self.Role.get()
         dept = self.Dept.get()
-        if "@" in mail and name != "" and dob != "" and mail != "" and phone != "" and role != "" and dept != "":
-            self.cursor.execute("insert into employees(Name, DOB, Email, Phone, Role, Dept) values(%s, %s, %s, %s, %s, %s)", [name, dob, mail, phone, role, dept])
-            self.db.commit()
-            tkinter.messagebox.showinfo("emp added", "Employee Added Successfully")
-        else:
-            tkinter.messagebox.showerror("emp addition err", "Please Enter Valid Details")
+        self.Data.add_emp_data(name, dob, mail, phone, role, dept)
     
     def UpdateEmp(self):
         id = self.ID.get()
@@ -35,14 +36,15 @@ class EmpEdit:
         dept = self.Dept.get()
         dob = self.Dob.get()
         mail = self.Email.get()
-        ph = self.Phone.get()
+        phone = self.Phone.get()
         role = self.Role.get()
-        if id in self.Data.ID():
-            self.cursor.execute("update employees set Name = %s, Dept = %s, DOB = %s, Email  = %s, Phone = %s, Role = %s where ID = %s", [name, dept, dob, mail, ph, role, id])
-            self.db.commit()
-            tkinter.messagebox.showinfo("update added", "Employee Updated Successfully")
-        else:
-            tkinter.messagebox.showerror("emp update err", "There is no Employee with this ID")
+        self.Data.update_emp_data(id, name, dob, mail, phone, role, dept)
+        # if id in self.Data.ID():
+        #     self.cursor.execute("update employees set Name = %s, Dept = %s, DOB = %s, Email  = %s, Phone = %s, Role = %s where ID = %s", [name, dept, dob, mail, ph, role, id])
+        #     self.db.commit()
+        #     tkinter.messagebox.showinfo("update added", "Employee Updated Successfully")
+        # else:
+        #     tkinter.messagebox.showerror("emp update err", "There is no Employee with this ID")
 
     def EmpDelete(self):
         id = self.ID.get()

@@ -33,30 +33,11 @@ class EmployeeManagement:
         self.EditPage = Frame(self.root, bg = "lightblue")
         self.DeptPage = Frame(self.root, bg = "lightblue")
         self.PayRollpage = Frame(self.root, bg = "lightblue")
-        self.activePage = None
+        self.activePage = self.HomePage
         self.WelcomeScreen()
         self.root.mainloop()
-
-    def AddEmp(self):
-        name = self.Name.get()
-        dob = self.Dob.get()
-        mail = self.Email.get()
-        phone = self.Phone.get()
-        role = self.Role.get()
-        dept = self.Dept.get()
-        if "@" in mail and name != "" and dob != "" and mail != "" and phone != "" and role != "" and dept != "":
-            self.cursor.execute("insert into employees(Name, DOB, Email, Phone, Role, Dept) values(%s, %s, %s, %s, %s, %s)", [name, dob, mail, phone, role, dept])
-            self.db.commit()
-            self.Name.set('')
-            self.Dob.set('')
-            self.Email.set('')
-            self.Phone.set('')
-            self.Role.set('')
-            self.Dept.set('')
-            tkinter.messagebox.showinfo("emp added", "Employee Added Successfully")
-        else:
-            tkinter.messagebox.showerror("emp addition err", "Please Enter Valid Details")
-    
+  
+    # Update employee details
     def UpdateEmp(self):
         id = self.ID.get()
         name = self.Name.get()
@@ -72,31 +53,46 @@ class EmployeeManagement:
         else:
             tkinter.messagebox.showerror("emp update err", "There is no Employee with this ID")
 
+    # Back button functionality
     def Back(self):
+        
         self.activePage.pack_forget()
+        print(self.activePage.winfo_viewable())
+        print(self.activePage)
         self.HomePage.pack(fill = BOTH, expand = True)
+        self.activePage = self.HomePage
 
+    # Employee edit page handling
     def GoEmpEditPage(self):
         global activePage
-        self.HomePage.pack_forget()
+        for widget in self.EditPage.winfo_children():
+            widget.destroy()
+        self.activePage.pack_forget()
         self.EditPage.pack(fill = BOTH, expand = True)
         self.activePage = self.EditPage
         self.EmpEditScreen()
 
+    # Departments page handling
     def GoDeptPage(self):
         global activePage
+        for widget in self.DeptPage.winfo_children():
+            widget.destroy()
         self.HomePage.pack_forget()
         self.DeptPage.pack(fill = BOTH, expand = True)
         self.activePage = self.DeptPage
         self.DepartmentsScreen()
 
+    #Payroll Page handling
     def GoPayRollPage(self):
         global activePage
+        for widget in self.PayRollpage.winfo_children():
+            widget.destroy()
         self.HomePage.pack_forget()
         self.PayRollpage.pack(fill = BOTH, expand = True)
         self.activePage = self.PayRollpage
         self.PayRollScreen()
 
+    # view employee details via id
     def GoViewEmpPage(self):
         viewEmp = Toplevel(self.root)
         viewEmp.geometry("1000x500")
@@ -114,6 +110,7 @@ class EmployeeManagement:
         
         viewEmp.mainloop()
 
+    #handling delete of a emplyee
     def EmpDelete(self):
         id = self.ID.get()
         if id in self.Data.ID():
@@ -123,6 +120,7 @@ class EmployeeManagement:
         else:
             tkinter.messagebox.showerror("emp delete err", "There is no Employee with this ID")
 
+    # Viewing all employees
     def EmpView(self):
         id = self.ID.get()
         name = self.Name.get()
@@ -142,6 +140,7 @@ class EmployeeManagement:
         else:
             tkinter.messagebox.showerror("no data", "Please enter Id or Name to see the details")
 
+    # Save salary details
     def SavePayRoll(self):
         id = self.ID.get()
         salary = self.Salary.get()
@@ -155,6 +154,7 @@ class EmployeeManagement:
         else:
             tkinter.messagebox.showerror("no id", "there is no employee with this id")
 
+    #view employees by department
     def ViewEmpByDept(self, d):
         emps = Toplevel(self.root)
         emps.geometry("1000x500")
@@ -167,10 +167,11 @@ class EmployeeManagement:
             for j in range(len(data[0])):
                 E = Entry(emps, text ='')
                 E.grid(row = i+1,column = j, padx = 5)
-                E.insert(END, data[i][j])
+                E.insert(END, str(data[i][j]))
         
         emps.mainloop()
 
+    # view paroll details of employees
     def ViewPayRoll(self):
         salaries = Toplevel(self.root)
         salaries.geometry("1000x500")
@@ -188,6 +189,7 @@ class EmployeeManagement:
         
         salaries.mainloop()
 
+    #the main welcome screen
     def WelcomeScreen(self):
         Label(self.HomePage, text = "-----------------------------------------------------------", bg = "lightblue", fg = "blue", font = ("calibri", 25)).place(x = 60, y = 30)
         Label(self.HomePage, text = "Welcome to Employee Management System", bg = "lightblue", fg = "blue", font = ("calibri", 25)).place(x = 60, y = 10)
@@ -207,7 +209,7 @@ class EmployeeManagement:
         emp_edit.EmpEditScreen()
 
     def DepartmentsScreen(self):
-        dept = Departments(self.DeptPage, self.Back)
+        dept = Departments(self.DeptPage, self.Back, self.ViewEmpByDept)
         dept.db = self.db
         dept.cursor = self.cursor
         dept.Data = self.Data

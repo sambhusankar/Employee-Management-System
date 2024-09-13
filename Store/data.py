@@ -1,4 +1,5 @@
 import mysql.connector
+import tkinter.messagebox
 
 class Data:
     def __init__(self):
@@ -17,6 +18,22 @@ class Data:
         
         return data
     
+    def add_emp_data(self, name, dob, mail, phone, role, dept):
+        if "@" in mail and name != "" and dob != "" and mail != "" and phone != "" and role != "" and dept != "":
+            self.cursor.execute("insert into employees(Name, DOB, Email, Phone, Role, Dept) values(%s, %s, %s, %d, %s, %s)", [name, dob, mail, phone, role, dept])
+            self.db.commit()
+            tkinter.messagebox.showinfo("emp added", "Employee Added Successfully")
+        else:
+            tkinter.messagebox.showerror("emp addition err", "Please Enter Valid Details")
+    
+    def update_emp_data(self, id, name, dob, mail, phone, role, dept):
+        if id in self.Data.ID():
+            self.cursor.execute("update employees set Name = %s, Dept = %s, DOB = %s, Email  = %s, Phone = %s, Role = %s where ID = %s", [name, dept, dob, mail, phone, role, id])
+            self.db.commit()
+            tkinter.messagebox.showinfo("update added", "Employee Updated Successfully")
+        else:
+            tkinter.messagebox.showerror("emp update err", "There is no Employee with this ID")
+
     def salary_data(self):
         self.cursor.execute("select employees.ID, employees.Name, payroll.Salary, payroll.Bonus, payroll.Deduction, payroll.Pay_Date from employees inner join payroll ON employees.ID = payroll.ID")
         d = self.cursor.fetchall()
