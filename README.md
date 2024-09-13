@@ -22,3 +22,8 @@ The application's graphical design incorporates a stylized gear motif, symbolizi
 # Add-Salary-Detail-Page
 
 
+
+![Screenshot 2024-08-06 185419](https://github.com/user-attachments/assets/c6304188-a7db-4fac-b173-bd255ed332aa)
+
+# Component and store based architecture like react and redux
+
